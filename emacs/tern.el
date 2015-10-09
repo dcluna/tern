@@ -126,7 +126,11 @@ list of strings, giving the binary name and arguments.")
 (defvar tern-buffer-is-dirty nil)
 
 (defun tern-project-relative-file ()
-  (substring (buffer-file-name) (length (tern-project-dir))))
+  ;; this function blows up if trying to use tern-mode in a buffer with no associated filename - which pains me because tern-mode is turned on by default in Spacemacs. I'll just ignore this if there is no associated file or tern-project
+  (let ((current-file (buffer-file-name))
+        (project-dir (tern-project-dir)))
+    (if (and current-file (not (string= "" project-dir)))
+        (substring current-file (length project-dir)))))
 
 (defun tern-get-partial-file (at)
   (let* (min-indent start-pos end-pos
